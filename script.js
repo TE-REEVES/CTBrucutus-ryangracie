@@ -60,6 +60,79 @@ requestAnimationFrame(() => {
 
     });
 
+     /* =========================================================
+   COPIAR CHAVE PIX
+   ========================================================= */
+
+const pixKey = "663099810001-61";
+
+const copyPixButton =
+  document.getElementById("copyPixButton");
+
+const copyPixFeedback =
+  document.getElementById("copyPixFeedback");
+
+
+if (copyPixButton) {
+
+  copyPixButton.addEventListener("click", async () => {
+
+    try {
+
+      await navigator.clipboard.writeText(pixKey);
+
+    } catch (error) {
+
+      /*
+        Fallback para navegadores antigos
+        e alguns casos no Safari.
+      */
+
+      const textarea =
+        document.createElement("textarea");
+
+      textarea.value =
+        pixKey;
+
+      textarea.style.position =
+        "fixed";
+
+      textarea.style.opacity =
+        "0";
+
+      document.body.appendChild(textarea);
+
+      textarea.focus();
+      textarea.select();
+
+      document.execCommand("copy");
+
+      textarea.remove();
+
+    }
+
+
+    if (copyPixFeedback) {
+
+      copyPixFeedback.classList.add(
+        "is-visible"
+      );
+
+
+      setTimeout(() => {
+
+        copyPixFeedback.classList.remove(
+          "is-visible"
+        );
+
+      }, 2200);
+
+    }
+
+  });
+
+}
+
   });
 
 });
