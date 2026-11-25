@@ -5,13 +5,8 @@
 
 
 /* =========================================================
-   ANIMAÇÕES DE ENTRADA
+   1. ANIMAÇÕES DE ENTRADA
    ========================================================= */
-
-/*
-  Seleciona os principais elementos
-  que queremos animar ao abrir a página.
-*/
 
 const animatedElements = [
   document.querySelector(".eyebrow"),
@@ -24,18 +19,10 @@ const animatedElements = [
 ].filter(Boolean);
 
 
-/*
-  Adiciona a classe inicial.
-*/
-
+/* Adiciona o estado inicial da animação */
 animatedElements.forEach((element, index) => {
 
   element.classList.add("reveal");
-
-  /*
-    Cria uma pequena diferença de tempo
-    entre cada elemento.
-  */
 
   element.style.setProperty(
     "--reveal-delay",
@@ -45,11 +32,7 @@ animatedElements.forEach((element, index) => {
 });
 
 
-/*
-  Espera o navegador renderizar a página
-  antes de iniciar a animação.
-*/
-
+/* Inicia a animação depois da renderização */
 requestAnimationFrame(() => {
 
   requestAnimationFrame(() => {
@@ -59,8 +42,14 @@ requestAnimationFrame(() => {
       element.classList.add("is-visible");
 
     });
+
+  });
+
+});
+
+
 /* =========================================================
-   COPIAR CHAVE PIX
+   2. COPIAR CHAVE PIX
    ========================================================= */
 
 const pixKey = "663099810001-61";
@@ -72,57 +61,184 @@ const copyPixFeedback =
   document.getElementById("copyPixFeedback");
 
 
+/* Só executa se os elementos existirem */
 if (copyPixButton && copyPixFeedback) {
 
   copyPixButton.addEventListener("click", async () => {
 
+    let copied = false;
+
+
+    /* =====================================================
+       TENTATIVA 1
+       Clipboard API
+       ===================================================== */
+
     try {
 
-      /* Tenta copiar normalmente */
-      await navigator.clipboard.writeText(pixKey);
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+
+        await navigator.clipboard.writeText(
+          pixKey
+        );
+
+        copied = true;
+
+      }
 
     } catch (error) {
 
-      /* Fallback para Safari / navegadores antigos */
+      console.warn(
+        "Clipboard API indisponível:",
+        error
+      );
+
+    }
+
+
+    /* =====================================================
+       FALLBACK
+       Safari / navegadores antigos
+       ===================================================== */
+
+    if (!copied) {
+
       const textarea =
         document.createElement("textarea");
+
 
       textarea.value =
         pixKey;
 
+
+      textarea.setAttribute(
+        "readonly",
+        ""
+      );
+
+
       textarea.style.position =
         "fixed";
-
-      textarea.style.top =
-        "-9999px";
 
       textarea.style.left =
         "-9999px";
 
-      document.body.appendChild(textarea);
+      textarea.style.top =
+        "-9999px";
+
+      textarea.style.opacity =
+        "0";
+
+
+      document.body.appendChild(
+        textarea
+      );
+
 
       textarea.focus();
       textarea.select();
 
-      document.execCommand("copy");
+
+      try {
+
+        copied =
+          document.execCommand("copy");
+
+      } catch (error) {
+
+        copied =
+          false;
+
+        console.error(
+          "Não foi possível copiar:",
+          error
+        );
+
+      }
+
 
       textarea.remove();
+
     }
 
 
-    /* Mostra a mensagem somente depois da cópia */
-    copyPixFeedback.hidden = false;
+    /* =====================================================
+       FEEDBACK
+       ===================================================== */
 
-    requestAnimationFrame(() => {
+    if (copied) {
 
-      copyPixFeedback.classList.add(
-        "is-visible"
+      showPixFeedback(
+        "Chave Pix copiada!"
       );
 
-    });
+    } else {
+
+      showPixFeedback(
+        "Não foi possível copiar."
+      );
+
+    }
+
+  });
+
+}
 
 
-    /* Esconde novamente depois de 2,2 segundos */
+/* =========================================================
+   3. MOSTRAR FEEDBACK
+   ========================================================= */
+
+let pixFeedbackTimeout;
+
+
+function showPixFeedback(message) {
+
+  if (!copyPixFeedback) {
+    return;
+  }
+
+
+  /*
+    Cancela timeout anterior
+    caso o usuário clique várias vezes.
+  */
+  clearTimeout(
+    pixFeedbackTimeout
+  );
+
+
+  copyPixFeedback.textContent =
+    message;
+
+
+  /*
+    Remove o atributo hidden.
+  */
+  copyPixFeedback.hidden =
+    false;
+
+
+  /*
+    Aguarda um frame antes de aplicar
+    a classe de animação.
+  */
+  requestAnimationFrame(() => {
+
+    copyPixFeedback.classList.add(
+      "is-visible"
+    );
+
+  });
+
+
+  /*
+    Esconde após 2,2 segundos.
+  */
+  pixFeedbackTimeout =
     setTimeout(() => {
 
       copyPixFeedback.classList.remove(
@@ -132,16 +248,11 @@ if (copyPixButton && copyPixFeedback) {
 
       setTimeout(() => {
 
-        copyPixFeedback.hidden = true;
+        copyPixFeedback.hidden =
+          true;
 
       }, 200);
 
     }, 2200);
 
-  });
-
 }
-
-  });
-
-});
