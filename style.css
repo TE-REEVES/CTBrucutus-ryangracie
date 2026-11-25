@@ -1213,6 +1213,69 @@ h1 {
     4px;
 }
 
+/* =========================================================
+   FEEDBACK — PIX COPIADO
+   ========================================================= */
+
+.copy-feedback {
+  width: 100%;
+
+  margin:
+    0;
+
+  color:
+    rgba(255, 255, 255, 0.82);
+
+  font-size:
+    0.84rem;
+
+  font-weight:
+    600;
+
+  text-align:
+    center;
+
+  opacity:
+    0;
+
+  visibility:
+    hidden;
+
+  transform:
+    translateY(-4px);
+
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 180ms ease;
+
+  pointer-events:
+    none;
+}
+
+
+.copy-feedback.is-visible {
+  opacity:
+    1;
+
+  visibility:
+    visible;
+
+  transform:
+    translateY(0);
+}
+
+
+/*
+  Muito importante:
+  enquanto estiver hidden,
+  não ocupa espaço na página.
+*/
+.copy-feedback[hidden] {
+  display:
+    none !important;
+}
+
 
 /* =========================================================
    22. TABLET
