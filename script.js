@@ -59,8 +59,7 @@ requestAnimationFrame(() => {
       element.classList.add("is-visible");
 
     });
-
-     /* =========================================================
+/* =========================================================
    COPIAR CHAVE PIX
    ========================================================= */
 
@@ -73,21 +72,18 @@ const copyPixFeedback =
   document.getElementById("copyPixFeedback");
 
 
-if (copyPixButton) {
+if (copyPixButton && copyPixFeedback) {
 
   copyPixButton.addEventListener("click", async () => {
 
     try {
 
+      /* Tenta copiar normalmente */
       await navigator.clipboard.writeText(pixKey);
 
     } catch (error) {
 
-      /*
-        Fallback para navegadores antigos
-        e alguns casos no Safari.
-      */
-
+      /* Fallback para Safari / navegadores antigos */
       const textarea =
         document.createElement("textarea");
 
@@ -97,8 +93,11 @@ if (copyPixButton) {
       textarea.style.position =
         "fixed";
 
-      textarea.style.opacity =
-        "0";
+      textarea.style.top =
+        "-9999px";
+
+      textarea.style.left =
+        "-9999px";
 
       document.body.appendChild(textarea);
 
@@ -108,26 +107,36 @@ if (copyPixButton) {
       document.execCommand("copy");
 
       textarea.remove();
-
     }
 
 
-    if (copyPixFeedback) {
+    /* Mostra a mensagem somente depois da cópia */
+    copyPixFeedback.hidden = false;
+
+    requestAnimationFrame(() => {
 
       copyPixFeedback.classList.add(
+        "is-visible"
+      );
+
+    });
+
+
+    /* Esconde novamente depois de 2,2 segundos */
+    setTimeout(() => {
+
+      copyPixFeedback.classList.remove(
         "is-visible"
       );
 
 
       setTimeout(() => {
 
-        copyPixFeedback.classList.remove(
-          "is-visible"
-        );
+        copyPixFeedback.hidden = true;
 
-      }, 2200);
+      }, 200);
 
-    }
+    }, 2200);
 
   });
 
